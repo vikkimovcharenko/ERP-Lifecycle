@@ -11,7 +11,7 @@ Before a Purchase Requisition can be successfully initiated and routed, the foll
 
 ### 1.2. Master Data & Financial Setup
 *   **Organizational Structure:** Employee list uploaded with reporting hierarchies (essential for approval routing).
-*   **Financials:** Financial dimensions configured, including GL Accounts and Cost Centers.
+*   **Financials:** Financial info configured, including GL Accounts and Cost Centers.
 *   **Workflow:** Procurement Approval Matrix configured in the system.
 *   **Catalogs:** Initial upload of Item Master Data, Vendors, and Contracts.
 *   **Cutover Data (Migration):** Upload of historical/open data, including open PRs, open POs, on-hand inventory, and Work-in-Progress (WIP) inventory.
