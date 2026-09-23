@@ -34,6 +34,37 @@ Before a Purchase Requisition can be successfully initiated and routed, the foll
 4. **Submission:** The Requestor populates remaining details (quantity, required date), saves the requisition, and clicks *Send for Approval*.
 5. **System Routing:** The system evaluates the PR value and cost center, automatically routing it to the appropriate approvers based on the Procurement Approval Matrix.
 
+### Process Diagram
+
+```mermaid
+flowchart TD
+    Start((Start)) --> A[Open Requisitions Module]
+    A --> B[Create New Requisition]
+    
+    B --> C{Vendor & Contract<br>Known?}
+    
+    C -- Yes --> D[Select Vendor & Contract]
+    D --> E[Select Item from<br>Vendor Catalog]
+    
+    C -- No --> F[Leave Vendor blank]
+    F --> G[Select Item from<br>General Catalog]
+    
+    E --> H{Item Exists<br>in System?}
+    G --> H
+    
+    H -- No --> I[Initiate 'Item Creation'<br>Request]
+    I --> End1(((Process Paused)))
+    
+    H -- Yes --> J[Enter Details<br>Quantity, Date]
+    J --> K[Save Requisition]
+    K --> L[Send for Approval]
+    L --> M[System Routes PR<br>based on Matrix]
+    M --> End2(((End)))
+    
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px;
+    classDef decision fill:#e1f5fe,stroke:#03a9f4,stroke-width:2px;
+    class C,H decision;
+```
 ---
 
 ## 3. Key User Stories
