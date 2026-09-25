@@ -90,3 +90,18 @@ flowchart TD
     classDef decision fill:#e1f5fe,stroke:#03a9f4,stroke-width:2px;
     class Type,CatAmount1,CatAmount2,NonCatAmount1,NonCatAmount2,NonCatAmount3,PD1_Check,PD2_Check,CFO1_Check,CFO2_Check,CC_Check,PM_Check,VendorCheck decision;
 
+```
+
+---
+
+
+## 4. Key User Stories
+
+*   **US-SYS-01:** As a System Administrator, I want to configure Descriptive Flexfields (DFF) for GL accounts so that financial data can be captured flexibly according to the entity's structure.
+*   **US-AM-01:** As the System, I want to enforce sequential routing so that higher-level executives (e.g., CFO) only review Requisitions that have already been vetted and approved by lower-tier management.
+*   **US-AM-02:** As a Procurement Manager, I want to review any Non-Catalogue PR exceeding €10,000 after the CC Responsible has approved it, to ensure compliance before final CFO escalation.
+
+
+
+
+    
