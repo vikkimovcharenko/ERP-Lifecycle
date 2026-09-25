@@ -50,7 +50,21 @@ flowchart TD
     classDef status fill:#fff3e0,stroke:#ff9800,stroke-width:2px;
     classDef statusDone fill:#e8f5e9,stroke:#4caf50,stroke-width:2px;
     classDef decision fill:#e1f5fe,stroke:#03a9f4,stroke-width:2px;
-    
+
+
     class E status;
     class I statusDone;
     class G decision;
+
+```
+## 4. Key User Stories
+
+*   **US-MDM-01:** As a Requestor, I want to fill out a structured form with specific limits (Inventory, WIP, QC) when requesting a new item, so that the Item Admin has all necessary technical data upfront.
+*   **US-MDM-02:** As the System, I want to update the request status to "Sent" upon submission and to "Done" upon creation, so that the Requestor can track the progress of their request without manual follow-ups.
+*   **US-MDM-03:** As an Item Admin, I want to receive all item requests in a centralized "System Requests" queue, so that I can process them efficiently and prevent catalog duplicates.
+
+
+
+
+
+
