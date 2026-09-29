@@ -19,20 +19,25 @@ Before a Purchase Requisition can be successfully initiated and routed, the foll
 ---
 ## 2. Business Process Flow: Create Purchase Requisition
 
-**Primary Actor:** Production Manager (Requestor)
+**Primary Actors:** Production Manager (Requestor), System (MRP)
 **Trigger:** Need for materials (Part X) for the manufacturing process.
+
+**Trigger Gateway (Manual vs. Automated):**
+*   **Automated (MRP/Min-Max):** For standard catalog components, the ERP's Material Requirements Planning (MRP) engine continuously monitors stock levels. When inventory drops below the predefined Minimum Stock threshold, the system automatically generates a Draft PR.
+*   **Manual:** The Production Manager manually initiates a PR for non-standard or ad-hoc requirements.
 
 ### Process Steps:
 1. **Initiation:** The Requestor navigates to the *Requisitions* module and selects *Create Requisition*.
 2. **Vendor & Contract Selection (Conditional):**
-   *   *Scenario A (Known Source):* The Requestor selects an existing Vendor and an active Contract.
-   *   *Scenario B (Unknown Source):* If the vendor or contract does not exist, the Requestor leaves these fields blank. (Note: This will later trigger a separate Sourcing/RFQ process for the Procurement department).
+    *   *Scenario A (Known Source):* The Requestor selects an existing Vendor and an active Contract.
+    *   *Scenario B (Unknown Source):* If the vendor or contract does not exist, the Requestor leaves these fields blank. (Note: This will later trigger a separate Sourcing/RFQ process for the Procurement department).
 3. **Item Selection:**
-   *   If *Scenario A* was selected, choose the item directly from the specific Vendor’s catalog.
-   *   If *Scenario B* was selected, choose the item from the general Item Master catalog.
-   *   *Exception Handling:* If the required item does not exist in the system at all, the Requestor pauses the PR creation and initiates a separate **Item Creation Request** workflow.
+    *   If *Scenario A* was selected, choose the item directly from the specific Vendor’s catalog.
+    *   If *Scenario B* was selected, choose the item from the general Item Master catalog.
+    *   *Exception Handling:* If the required item does not exist in the system at all, the Requestor pauses the PR creation and initiates a separate **Item Creation Request** workflow.
 4. **Submission:** The Requestor populates remaining details (quantity, required date), saves the requisition, and clicks *Send for Approval*.
 5. **System Routing:** The system evaluates the PR value and cost center, automatically routing it to the appropriate approvers based on the Procurement Approval Matrix.
+
 
 ### Process Diagram
 
@@ -72,6 +77,7 @@ flowchart TD
 *   **US-PR-01:** As a Production Manager, I want to create a purchase requisition for an item without specifying a vendor, so that the Procurement team can source and negotiate the best contract.
 *   **US-PR-02:** As a Production Manager, I want to easily select an item from an existing vendor's active contract, so that the procurement process is expedited.
 *   **US-PR-03:** As a Production Manager, I need the ability to trigger an "Item Creation Request" directly from the PR screen if a part is missing, so that I don't have to navigate to a different module to request master data updates.
+*   **US-PR-04:** As the System, I want to automatically generate a Purchase Requisition when an active item's stock falls below the minimum threshold, so that manufacturing never halts due to predictable material shortages.
 
 
 
