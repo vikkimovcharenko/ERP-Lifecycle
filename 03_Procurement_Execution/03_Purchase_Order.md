@@ -8,6 +8,10 @@ The Purchase Order (PO) generation process employs a dual-path logic based on th
 **Primary Actors:** System, Procurement Manager, Finance Controller.
 
 ### Process Steps:
+
+   **Pre-Condition:** Vendor Risk Check:
+Before any PO is generated (automatically or manually), the system verifies the Vendor's active Performance Rating. If the rating is below the acceptable threshold (due to previous QC defects or delivery delays), the system automatically blocks the PO creation, flags the vendor as [On Hold], and routes an alert to the Procurement Manager to source an alternate supplier.
+
 1. **Initiation:** The workflow is triggered when a PR receives final approval.
 2. **Routing Gateway (Catalog vs. Non-Catalog):**
     *   **Catalog PR:** The system automatically generates the PO using fixed contract prices, auto-approves it, and proceeds to dispatch.
@@ -60,9 +64,13 @@ flowchart TD
 
 ## 4. Key User Stories
 
-**US-PO-01:** As the System, I want to automatically generate, approve, and dispatch POs for Catalog PRs linked to an active contract, so that routine purchasing requires zero manual intervention.
-**US-PO-02:** As a Procurement Manager, I want to manually enter current pricing for Non-Catalog POs, so that I can accurately reflect negotiated ad-hoc costs before linking them to the Umbrella Contract.
-**US-PO-03:** As the System, I want to automatically check Non-Catalog POs against the contract's Price Variance limit, routing exceptions to Finance while auto-approving those within tolerance.
-**US-PO-04:** As a Vendor, I want to receive an automated email with the approved PO attached as a PDF, so that I can immediately begin order fulfillment.
-
+ **US-PO-01:** As the System, I want to automatically generate, approve, and dispatch POs for Catalog PRs linked to an active contract, so that routine purchasing requires zero manual intervention.
+ 
+ **US-PO-02:** As a Procurement Manager, I want to manually enter current pricing for Non-Catalog POs, so that I can accurately reflect negotiated ad-hoc costs before linking them to the Umbrella Contract.
+ 
+ **US-PO-03:** As the System, I want to automatically check Non-Catalog POs against the contract's Price Variance limit, routing exceptions to Finance while auto-approving those within tolerance.
+ 
+ **US-PO-04:** As a Vendor, I want to receive an automated email with the approved PO attached as a PDF, so that I can immediately begin order fulfillment.
+ 
+ **US-PO-05:** As the System, I want to block the generation of a PO if the selected Vendor's performance rating is below the critical threshold, so that we structurally prevent supply chain risks caused by chronic underperformers.
 
