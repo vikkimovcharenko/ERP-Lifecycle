@@ -83,11 +83,13 @@ flowchart TD
 
 ## 4. Key User Stories
 
-  *   **US-MFG-01:** As a Production Manager, I want the Work Order to follow a multi-stage routing path (e.g., Assembly then Finishing), so that I can track work-in-progress accurately across different factory departments.
-  *   **US-MFG-02:** As a Production Manager, I want the ability to initiate a Scrap Document during the assembly stage for monolithic parts that break, so that inventory is immediately corrected without waiting for final QA.
-  *   **US-QA-01:** As a QA Engineer, I want the ability to partially reject a production batch and trigger a Rework Order targeting a specific prior manufacturing stage, so that fixable products are efficiently corrected.
-  *   **US-QA-02:** As a QA Engineer, I want to initiate a Scrap Document for completed units that fail final inspection and cannot be reworked, ensuring defective items never reach Finished Goods.
-  *   **US-FIN-02:** As a Financial Controller, I want to approve any Scrap Documents exceeding our financial threshold, so that high-value inventory write-offs are financially audited before posting to the general ledger.
+  *   **US-MRP-01:** As the System, I want to continuously monitor inventory levels against the Production Plan, so that I can send critical low-stock alerts to Production and Procurement Managers before a line stoppage occurs.
+ *   **US-MRP-02:** As the System, I want to automatically generate Purchase Requisitions for catalog items when stock drops below minimum thresholds, so that routine replenishment happens without manual intervention.
+ *   **US-MFG-01:** As a Production Manager, I want the Work Order to follow a multi-stage routing path, so that I can track work-in-progress accurately.
+ *   **US-MFG-02:** As a Production Manager, I want to initiate a Scrap Document during assembly for parts that break, so that inventory is immediately corrected.
+ *   **US-QA-01:** As a QA Engineer, I want the ability to trigger a Rework Order targeting a specific prior manufacturing stage, so that fixable products are efficiently corrected.
+ *   **US-QA-02:** As a QA Engineer, I want to initiate a Scrap Document for completed units that fail final inspection.
+ *   **US-FIN-02:** As a Financial Controller, I want to approve any Scrap Documents exceeding our financial threshold, ensuring high-value write-offs are audited.
 
 
 
