@@ -1,29 +1,34 @@
 # 06. Manufacturing Execution & Quality Assurance
 
 ## 1. Business Context
-The Manufacturing module transforms raw materials into Finished Goods (FG) utilizing multi-stage production routings (e.g., Stage 1: Assembly, Stage 2: Calibration/Finishing). This scalable architecture supports End-to-End Traceability, locking the exact batch/lot numbers and receipt dates for every consumed component. 
+The Manufacturing module is driven by a **Production Plan (Master Production Schedule - MPS)**. To prevent production downtime, the system utilizes Material Requirements Planning (MRP) logic: it continuously monitors inventory levels against the Production Plan. When component stock approaches critical minimums, the system automatically triggers alerts and generates Purchase Requisitions (PRs) for catalog items.
 
-To accommodate varying product complexities (from reworkable assemblies to monolithic components), the system allows both Production Managers and QA Engineers to initiate "Scrap" documents if irreversible defects occur at any stage. Completed batches must pass a final Quality Assurance (QA) gateway before transferring to FG inventory, while fixable defects trigger a Return to Production (Rework) order.
+Once materials are secured, production transforms raw materials into Finished Goods (FG) utilizing multi-stage routings, ensuring End-to-End Lot Traceability. QA Engineers or Production Managers can initiate Scrap documents for defects, subject to financial approval, while fixable defects trigger Rework Orders.
 
 ## 2. Business Process Flow
 
-**Primary Actors:** Production Manager, QA Engineer, Financial Controller, System.
+**Primary Actors:** Production Manager, QA Engineer, Financial Controller, System (MRP).
 
 ### Process Steps:
-1. **Initiation & Allocation (Production Manager):**
-    *   The Production Manager creates a **Production Work Order (WO)** based on the Bill of Materials (BOM) and multi-stage Routing template.
-    *   *System Check:* Verifies "Production Available" (PA) stock and securely allocates components, locking Lot/Batch traceability.
-2. **Multi-Stage Execution (WIP):**
-    *   **Stage 1 (Assembly):** Components are consumed. If a monolithic part is irreparably damaged during assembly, the Production Manager can immediately initiate a **Scrap Document** for that specific item.
-    *   **Stage 2 (Finishing):** The assembled unit moves to the next routing step. Status updates continuously within **[In Progress]**.
-3. **QA Testing Gateway:**
-    *   Upon completion of all routing stages, the batch status updates to **[In Testing]**. The QA Engineer evaluates the output.
-4. **Outcome Routing:**
-    *   *Scenario A (Pass):* The QA Engineer approves the batch. The system generates an FG Receipt, moving items to the FG Warehouse. Status: **[Completed]**.
-    *   *Scenario B (Rework):* QA identifies fixable defects. A **Rework Order** is generated, returning the specific units to the appropriate WIP stage for correction.
-    *   *Scenario C (Scrap Initialization):* QA identifies irreparable defects. The QA Engineer initiates a **Scrap Document**. 
-5. **Financial Scrap Approval:**
-    *   All Scrap Documents (whether initiated by Production or QA) that exceed a predefined financial threshold are routed to the Financial Controller for final write-off approval before the inventory valuation is reduced.
+1. **Production Planning & Automated MRP (System/Production Manager):**
+    *   The Production Manager defines the long-term **Production Plan**.
+    *   *Automated MRP Check:* The system calculates required BOM components. If the projected "Production Available" (PA) stock falls below the critical threshold:
+        *   **Alerts:** System dispatches urgent notifications to the Production Manager and Procurement Manager.
+        *   **Auto-PR:** For catalog items, the system automatically generates a PR.
+2. **Initiation & Allocation:**
+    *   The Production Manager creates a **Production Work Order (WO)** based on the BOM and multi-stage Routing.
+    *   The system allocates PA stock and securely locks Lot/Batch traceability.
+3. **Multi-Stage Execution (WIP):**
+    *   **Stage 1 (Assembly):** Components are consumed. If a monolithic part is irreparably damaged, the Production Manager can immediately initiate a **Scrap Document**.
+    *   **Stage 2 (Finishing):** The unit moves to the next routing step.
+4. **QA Testing Gateway:**
+    *   Upon routing completion, status updates to **[In Testing]**. The QA Engineer evaluates the output.
+5. **Outcome Routing:**
+    *   *Scenario A (Pass):* The batch is approved. System generates an FG Receipt. Status: **[Completed]**.
+    *   *Scenario B (Rework):* QA identifies fixable defects. A **Rework Order** returns units to WIP.
+    *   *Scenario C (Scrap):* QA initiates a **Scrap Document** for unfixable defects. 
+6. **Financial Scrap Approval:**
+    *   Scrap Documents exceeding predefined financial limits route to the Financial Controller for write-off approval.
 
 ---
 
@@ -31,42 +36,45 @@ To accommodate varying product complexities (from reworkable assemblies to monol
 
 ```mermaid
 flowchart TD
-    Start((Create Work Order)) --> Alloc[System Allocates PA Stock<br>& Locks Lot Traceability]
+    Plan((Production Plan)) --> MRP[System: MRP Evaluates Stock]
     
-    %% Multi-stage Routing
-    Alloc --> Stage1[Stage 1: Assembly<br>Status: In Progress]
-    Stage1 --> Stage2[Stage 2: Finishing<br>Status: In Progress]
+    %% MRP Loop
+    MRP --> StockCheck{Stock Below<br>Critical Level?}
+    StockCheck -- Yes --> Alert[Alert: Prod & Proc Managers]
+    Alert --> AutoPR[Auto-Generate PR<br>for Catalog Items]
+    AutoPR -.-> Plan
     
-    %% In-Process Scrap
+    %% Execution
+    StockCheck -- No (Stock OK) --> WO[Initiate Work Order]
+    WO --> Alloc[Allocate PA Stock &<br>Lock Lot Traceability]
+    
+    Alloc --> Stage1[Stage 1: Assembly]
+    Stage1 --> Stage2[Stage 2: Finishing]
+    
+    %% Scrap & Rework
     Stage1 -. Irreparable Damage .-> ScrapDoc[Initiate Scrap Document]
     Stage2 -. Irreparable Damage .-> ScrapDoc
     
-    %% QA Process
-    Stage2 --> Test[Production Complete<br>Status: In Testing]
-    Test --> QA{QA Engineer<br>Inspection}
+    Stage2 --> Test[Status: In Testing]
+    Test --> QA{QA Inspection}
     
-    QA -- Pass --> FG[Move to Finished Goods<br>Warehouse]
-    FG --> End1(((Status: Completed)))
-    
-    QA -- Rework --> ReworkOrder[Generate Rework Order<br>Return to Stage 1 or 2]
+    QA -- Pass --> FG[Move to Finished Goods]
+    QA -- Rework --> ReworkOrder[Generate Rework Order]
     ReworkOrder -.-> Stage1
-    
     QA -- Unfixable --> ScrapDoc
     
-    %% Financial Write-off
-    ScrapDoc --> FinCheck{Exceeds Financial<br>Threshold?}
-    FinCheck -- Yes --> FinApprove[Financial Controller<br>Approval]
-    FinCheck -- No --> WriteOff
-    FinApprove --> WriteOff[System Writes-Off<br>Inventory to Scrap Account]
-    WriteOff --> End2(((Scrap Processed)))
+    ScrapDoc --> FinCheck{Exceeds Threshold?}
+    FinCheck -- Yes --> FinApprove[Financial Controller Approval]
+    FinCheck -- No --> WriteOff[System Writes-Off Inventory]
+    FinApprove --> WriteOff
 
     classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px;
     classDef decision fill:#e1f5fe,stroke:#03a9f4,stroke-width:2px;
     classDef sysAction fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px;
     classDef highlight fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
     
-    class QA,FinCheck decision;
-    class Alloc,WriteOff sysAction;
+    class StockCheck,QA,FinCheck decision;
+    class MRP,Alert,AutoPR,WriteOff sysAction;
     class Stage1,Stage2 highlight;
 
 ```
