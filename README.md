@@ -1,32 +1,48 @@
-# End-to-End Procurement & Manufacturing Lifecycle
+# Enterprise ERP Architecture Project
 
-##  Project Overview
-This repository contains business analysis documentation for a comprehensive Procure-to-Pay (P2P) and Manufacturing process. It demonstrates the flow of data and physical goods, starting from the initial need for materials to their utilization in production. The described processes and requirements are system-agnostic and applicable to modern enterprise ERP environments.
+Welcome to my Business Analysis portfolio project. This repository contains the complete architectural design and business requirements for an Enterprise ERP ecosystem, covering Procure-to-Pay (P2P), Manufacturing, and Order Fulfillment.
 
-## Process Scope & Integrations
-The project covers the complete implementation lifecycle, including system preparation, end-to-end business phases, and external system integrations:
+## Project Scope & Core Principles
+This project demonstrates a robust, enterprise-grade system design emphasizing:
+- **Strict Separation of Duties (SoD)** for SOX and financial audit compliance.
+- **End-to-End Lot/Batch Traceability** from raw materials to customer returns.
+- **Automated MRP** (Material Requirements Planning) to prevent production downtime.
+- **IFRS 15 Revenue Recognition** standards via Goods Issue-triggered invoicing.
 
-1. **System Setup & Security:** Definition of user roles, access permissions, and approval matrix configuration.
-2. **Data Migration:** Migration strategy for legacy data (Vendor Master Data, Open POs, Initial Inventory Balances).
-3. **Purchase Requisition (PR):** Internal request for manufacturing parts (Part X).
-4. **Vendor Management:** Vendor selection (RFQ) and onboarding/registration in the ERP system.
-5. **Procurement & AP:** Purchase Order (PO) creation, Invoice receipt, and AP matching.
-6. **Inventory & Quality Control:** Goods receipt, quality inspection, and stock placement.
-7. **Payment Processing (API Integration):** Integration with a Bank / Payment Gateway to execute vendor payments based on approved invoices.
-8. **Manufacturing:** Issuing Part X from inventory to the shop floor/production order.
-9. **Data Warehouse Export (ETL):** Exporting financial (AP, Payments) and operational (Inventory, PO) data to a corporate Data Warehouse for BI reporting.
+**For a complete overview of the business logic, architecture, and system rules, please start here:** 
+[**00_Master_BRD.md (Business Requirements Document)**](./00_Master_BRD.md)
 
-## Documentation Structure
-*(This section will be updated as the project progresses)*
-- `01_System_Setup/` - Role definitions and approval matrices.
-- `02_Data_Migration/` - Data mapping templates and migration strategy.
-- `03_Purchase_Requisition/` - Business requirements and process flow for PR.
-- `...`
-- `07_Payment_Integration/` - API specifications, JSON payloads, and sequence diagrams.
-- `09_DWH_Export/` - Data mapping tables and ETL logic for the data warehouse.
+---
 
-## Tools & Techniques Used
-- Business Process Modeling (BPMN) & Sequence Diagrams
-- Requirements Engineering (User Stories, Acceptance Criteria)
-- API Documentation & Data Mapping (Source-to-Target mapping)
-- Access Management & Migration Strategy
+## Table of Contents (System Modules)
+
+### Phase 1: Foundation & Master Data
+* **01. System Setup**
+  * [PR Approval Matrix](./01_System_Setup/01_PR_Aprproval_Matrix.md)
+  * [Invoice Approval Matrix](./01_System_Setup/02_Invoice_Approval_Matrix.md)
+  * [System Roles & Permissions (SoD)](./01_System_Setup/03_System_Roles_and_Permissions.md)
+* **02. Master Data Management (MDM)**
+  * [Item creation)](./02_Master_Data_Management/01_Item_Creation.md)
+  * [Vendor Onboarding](./02_Master_Data_Management/02_Vendor_Onboarding.md)
+  * [Bill of Materials](./02_Master_Data_Management/03_Bill_of_Materials.md/)
+  * [Customer Onboarding & Credit Management](./02_Master_Data_Management/04_Customer_Onboarding.md)
+
+### Phase 2: Procure-to-Pay (P2P)
+* **03. Procurement Execution**
+  * [Purchase Requisition & MRP Triggers](./03_Procurement_Execution/01_Purchase_Requisition.md)
+  * [Contract Managment](./03_Procurement_Execution/02_Contract_Managemegent.md)
+  * [Purchase Order Generation](./03_Procurement_Execution/03_Purchase_Order.md)
+* **04. Logistics & Quality Control**
+  * [Goods Receipt and QC ](./04_Logistics_and_QC/01_Goods_Receipt_and_QC.md)
+* **05. AP Financial Execution**
+  * [AP Invoice Matching (3-Way Match) & Payments](./05_Financial_Execution_and_Payment/01_AP_Invoice_Matching.md)
+
+### Phase 3: Build, Fulfill & Support
+* **06. Manufacturing & QA**
+  * [Production Execution, WIP & Scrap Routing](./06_Manufacturing/01_Production_Execution.md)
+* **07. Order Fulfillment & Sales**
+  * [Finished Goods Dispatch & Invoicing](./07_Order_Fulfillment_and_Sales/01_Finished_Goods_and_Dispatch.md)
+  * [Customer Returns (RMA) & Traceability](./07_Order_Fulfillment_and_Sales/02_Customer_Returns_RMA.md)
+
+---
+**Author:** [Viktoriia Ovcharenko] - Business Analyst / Product Owner
