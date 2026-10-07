@@ -9,9 +9,9 @@ The Accounts Payable (AP) Approval Matrix defines the delegation of authority fo
 | :--- | :--- | :--- | :--- |
 | **1. Registration** | AP Accountant | All Invoices | Validates physical document against system match (Status: `Initiated/New`) |
 | **2. Exception Routing** | Procurement Manager | Price Variance exceeds tolerance limits | Resolves discrepancies; requests Credit Memo (Status: `Price Hold`) |
-| **3. Tier 1 Approval** | AP Manager | Invoices ≤ €10,000 (Within match/tolerance) | Financial validation and budget confirmation |
-| **4. Tier 2 Approval** | Financial Controller | Invoices > €10,000 to €50,000 | Secondary review for high-value operational spend |
-| **5. Tier 3 Approval** | CFO | Invoices > €50,000 | Executive sign-off |
+| **3.  1 Approval** | AP Manager | Invoices ≤ €10,000 (Within match/tolerance) | Financial validation and budget confirmation |
+| **4.  2 Approval** | Financial Controller | Invoices > €10,000 to €50,000 | Secondary review for high-value operational spend |
+| **5.  3 Approval** | CFO | Invoices > €50,000 | Executive sign-off |
 | **6. Execution** | Payment Manager | Approved AP Batches | Authorizes API transmission to the bank for payment release |
 
 ## 3. Key User Stories
