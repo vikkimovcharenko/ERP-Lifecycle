@@ -44,5 +44,9 @@ This project demonstrates a robust, enterprise-grade system design emphasizing:
   * [Finished Goods Dispatch & Invoicing](./07_Order_Fulfillment_and_Sales/01_Finished_Goods_and_Dispatch.md)
   * [Customer Returns (RMA) & Traceability](./07_Order_Fulfillment_and_Sales/02_Customer_Returns_RMA.md)
 
+### Phase 4: Analytics & Intelligence
+* **08. Reporting & Analytics**
+  * [Reporting & BI Architecture](./08_Reporting_and_Analytics/01_Reporting_and_BI_Architecture.md)
+
 ---
 **Author:** [Viktoriia Ovcharenko] - Business Analyst / Product Owner
