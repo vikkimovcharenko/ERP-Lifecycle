@@ -33,6 +33,8 @@ The system is divided into seven sequential operational modules.
     *   Make-to-Stock, Make-to-Order, and R&D pipelines. 
     *   Flexible barcode picking (non-strict FIFO) and Goods Issue-triggered AR Invoicing.
     *   **Customer Returns (RMA):** Inbound logistics for returns, AR Credit Memo generation, and Traceability queries to categorize root causes (Vendor Defect, Internal Failure, or Customer Misuse).
+### Phase 4: Analytics & Intelligence
+*  **08. Reporting & Analytics:** Operational dashboards, reporting specifications, and QA/R&D outcome tracking.
 
 ## 4. Master Data Elements
 *   **Items/SKUs:** Categorized with dynamic thresholds for automated MRP.
