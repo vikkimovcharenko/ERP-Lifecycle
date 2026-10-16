@@ -22,7 +22,7 @@ This project demonstrates a robust, enterprise-grade system design emphasizing:
   * [Invoice Approval Matrix](./01_System_Setup/02_Invoice_Approval_Matrix.md)
   * [System Roles & Permissions (SoD)](./01_System_Setup/03_System_Roles_and_Permissions.md)
 * **02. Master Data Management (MDM)**
-  * [Item creation)](./02_Master_Data_Management/01_Item_Creation.md)
+  * [Item creation](./02_Master_Data_Management/01_Item_Creation.md)
   * [Vendor Onboarding](./02_Master_Data_Management/02_Vendor_Onboarding.md)
   * [Bill of Materials](./02_Master_Data_Management/03_Bill_of_Materials.md/)
   * [Customer Onboarding & Credit Management](./02_Master_Data_Management/04_Customer_Onboarding.md)
