@@ -48,5 +48,9 @@ This project demonstrates a robust, enterprise-grade system design emphasizing:
 * **08. Reporting & Analytics**
   * [Reporting & BI Architecture](./08_Reporting_and_Analytics/01_Reporting_and_BI_Architecture.md)
 
+### Phase 5: System Integrations
+* **09. System Integrations & Interfaces**
+  * [Financial Integrations: Outbound AP Payments](./9_System_Integrations/01_Financial_Integrations.md)
+    
 ---
 **Author:** [Viktoriia Ovcharenko] - Business Analyst / Product Owner
