@@ -48,3 +48,37 @@ The Reporting & Analytics layer provides operational visibility and executive de
 | **Col 4.4** | **Scrap Value (Cost)** | Standard cost of all failed units | $\sum (\text{Failed Qty} \times \text{Standard Unit Cost})$ |
 
 *Visualization:* Clustered Bar Chart tracking Total R&D Cost vs. Passed Value vs. Scrapped Value (in Local Currency) per Product.
+
+### Specification 3: Customer Returns (RMA) Quarterly Tendency & Root Cause
+
+**Objective:** Analyse current quarter customer returns by root cause and track the quarter-over-quarter (QoQ) tendency, including the financial impact of the changes.
+**Data Granularity:** Grouped by Product Name (Row), including a grand "Total" row at the bottom.
+**ETL Rule (Crucial):** The dataset must include all products returned in the *Current Quarter (CQ)* AND any products returned in the *Previous Quarters* (even if CQ returns = 0).
+
+| Column # | Field Name | Data Source / Filter Condition | Mathematical Formula |
+| :--- | :--- | :--- | :--- |
+| **Col 1** | **Cat A: Vendor Defect (CQ)** | `RMA_Lines` where `Root_Cause = Category A` (Current Quarter) | $\sum \text{Qty}$ |
+| **Col 2** | **Cat B: Internal Failure (CQ)**| `RMA_Lines` where `Root_Cause = Category B` (Current Quarter) | $\sum \text{Qty}$ |
+| **Col 3** | **Cat C: Customer Misuse (CQ)**| `RMA_Lines` where `Root_Cause = Category C` (Current Quarter) | $\sum \text{Qty}$ |
+| **Col 4** | **Total Return Cost (CQ)** | Standard cost of all CQ returned units | $\sum (\text{CQ Returned Qty} \times \text{Standard Unit Cost})$ |
+| **Col 5.1** | **Tendency: Q1 Delta (Qty)** | Difference between Q1 and Previous Q4 | $\text{Q1 Qty} - \text{Prev Q4 Qty}$ |
+| **Col 5.2** | **Tendency: Q2 Delta (Qty)** | Difference between Q2 and Q1 | $\text{Q2 Qty} - \text{Q1 Qty}$ |
+| **Col 5.3** | **Tendency: Q3 Delta (Qty)** | Difference between Q3 and Q2 | $\text{Q3 Qty} - \text{Q2 Qty}$ |
+| **Col 5.4** | **Tendency: Q4 Delta (Qty)** | Difference between Q4 and Q3 | $\text{Q4 Qty} - \text{Q3 Qty}$ |
+| **Col 6** | **Cost of Difference** | Financial impact of the Current Quarter Delta | $\text{Current Qtr Delta Qty} \times \text{Standard Unit Cost}$ |
+
+*   **Conditional Formatting Rules for Columns 5.1 - 5.4 & 6:** 
+    *   If value > 0 (Returns are increasing) $\rightarrow$ **Font/Background = RED**.
+    *   If value < 0 (Returns are decreasing) $\rightarrow$ **Font/Background = GREEN**.
+
+---
+
+### Visualization Specifications (Bar Diagram)
+
+**Graph 3: Quarterly RMA Cost Tendency**
+*   **Type:** Clustered Bar Chart.
+*   **X-Axis (Category):** Quarters (Q1, Q2, Q3, Q4).
+*   **Y-Axis (Value):** Total Cost of Returns (Local Currency).
+*   **Legend / Series (Cluster):** Break down by Root Cause (Vendor Defect vs. Internal Failure vs. Customer Misuse).
+*   **Business Value:** Enables top management to see not only the total cost of returns per quarter, but also to visually assess exactly whose "fault" (the vendor's or ours) is generating the highest financial losses in each period.
+
