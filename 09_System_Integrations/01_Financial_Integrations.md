@@ -1,36 +1,84 @@
 # 09. System Integrations & Interfaces
 
-## 1. Financial Integrations: Outbound AP Payments
+## 1. Financial Integrations: Outbound AP Payments (REST API & Webhooks)
 
-### 1.1 Process Trigger & Scheduling
-*   **Automation Rule:** A scheduled CRON job executes hourly between 09:00 and 16:00 (system local time).
-*   **Selection Criteria:** The system sweeps the AP Ledger for all invoices where `Invoice_Status = Approved` AND `Payment_Due_Date <= Current_Date`.
-*   **Pre-Flight Validation Rule:** Before selection into the batch, the system verifies:
-    *   Vendor has an active `IBAN`.
-    *   Vendor has a valid `SWIFT/BIC` code.
+### 1.1 Process Trigger & Pre-Flight Checks
+*   **Automation Rule:** A scheduled CRON job executes hourly between 09:00 and 16:00.
+*   **Selection Criteria:** Sweeps the AP Ledger for `Invoice_Status = Approved` AND `Payment_Due_Date <= Current_Date`.
+*   **Pre-Flight Validation:**
+    *   Vendor has an active IBAN and valid SWIFT/BIC code.
     *   Invoice Currency matches Vendor Bank Account Currency.
-    *   *Exception Handling:* If any check fails, the invoice status updates to `Exception: Missing Master Data`, it is excluded from the batch, and an alert is routed to the AP Manager.
+    *   *Exception Handling:* If checks fail, status updates to `Exception: Missing Master Data` and an alert is sent.
 
-### 1.2 Format & Payload Specification
-*   **Integration Method:** Secure Host-to-Host (H2H) SFTP connection.
-*   **Standard:** ISO 20022 Global Banking Format.
-*   **Outbound File (`pain.001`):** Payment Initiation message. The system aggregates all selected invoices into a single encrypted XML batch file.
-*   **Inbound Feedback (`pain.002`):** Payment Status Report received from the bank to confirm acceptance or rejection of the batch.
+### 1.2 API Architecture & Idempotency Rules
+*   **Integration Method:** RESTful API with Asynchronous Webhooks.
+*   **Synchronous Handshake:** The Payment Engine sends a `POST /payments` request to the Bank. The bank responds with `HTTP 202 Accepted`, confirming schema validation (this does not mean funds have settled).
+*   **Inbound Endpoint (Webhook):** The ERP hosts a public-facing, authenticated endpoint (`https://api.[company].com/webhooks/payment-update`) to receive status updates.
+*   **Webhook Acknowledgement:** The Payment Engine MUST immediately return an `HTTP 200 OK` upon receiving the webhook to prevent bank API timeouts and retry loops.
+*   **Idempotency Key Validation:** Because network glitches may cause duplicate webhooks, the Payment Engine must validate the `Transaction_ID` + `Status` combination against the database before updating the ERP. If the combination already exists, the webhook is ignored.
 
 ### 1.3 Invoice Status Lifecycle (State Machine)
-To prevent duplicate payments across hourly batches, the invoice status follows strict transitions:
-1.  **Approved:** Invoice has passed the 3-Way Match and Approval Matrix. Ready for selection.
-2.  **In Transit (Locked):** The hourly batch sweeps the invoice into the `pain.001` file. The status updates immediately to prevent the next hourly job from picking it up.
-3.  **Paid (Closed):** The system processes the bank's `pain.002` acknowledgement file confirming successful disbursement. The AP sub-ledger is cleared.
-4.  **Failed (Exception):** The bank rejects the payment (e.g., invalid vendor IBAN or insufficient funds). The status updates to `Payment Failed`, and an alert is routed to the AP Manager.
+1.  **Approved:** Ready for selection.
+2.  **In Transit:** Batch approved by AP Manager, `HTTP 202` received from Bank.
+3.  **Paid:** Webhook received confirming settlement. Idempotency verified. AP sub-ledger cleared.
+4.  **Payment Failed:** Webhook received indicating failure (e.g., NSF, invalid account). Alert routed to AP Manager.
 
-### 1.4 Data Mapping Document (pain.001 Source-to-Target)
+---
 
-| XML Tag (Target) | Bank Field Description | ERP Source Data & Transformation Rule |
-| :--- | :--- | :--- |
-| `<ReqdExctnDt>` | Requested Execution Date | `Payments.Payment_Date`. *Rule: If NULL, default to `Current_System_Date`.* |
-| `<Dbtr><Nm>` | Debtor (Payer) Name | `System_Setup.Company_Legal_Name` |
-| `<Cdtr><Nm>` | Creditor (Payee) Name | `Vendor_Master.Legal_Supplier_Full_Name` |
-| `<CdtrAcct><Id><IBAN>` | Creditor IBAN | `AP_Invoices.Planned_Payments.Vendor_Account_IBAN` |
-| `<InstdAmt Ccy="EUR">` | Instructed Amount & Currency | `AP_Invoices.Planned_Payments.Amount` & `Currency_Code` |
-| `<RmtInf><Ustrd>` | Unstructured Remittance Info | `AP_Invoices.Planned_Payments.Payment_Reference` *(Format: [Vendor_Invoice_No] / [ERP_Invoice_ID])* |
+### 1.4 API Sequence Diagram
+
+**sequenceDiagram**
+
+    autonumber
+    participant AP as Payment Manager
+    participant CRON as Scheduler
+    participant PE as Payment Engine
+    participant ERP as AP Ledger
+    participant API as Bank API Gateway
+    participant Bank as Core Banking
+
+    CRON->>PE: Trigger payment run
+    PE->>ERP: Query due invoices
+    ERP-->>PE: Return invoice list
+    PE->>PE: Create Payment Batch
+    PE->>AP: Request batch approval
+    
+    AP->>PE: Approve Batch
+    PE->>PE: Generate JSON Payload
+
+    Note right of PE: Synchronous API Call
+    PE->>API: POST API Payments
+    
+    alt Invalid Payload
+        API-->>PE: Error Response
+        PE->>ERP: Set invoices to Payment Failed
+        PE->>AP: Alert API submission failed
+    else Payload Accepted
+        API-->>PE: Accepted return batchId
+        PE->>ERP: Update invoices to Processing
+        API->>Bank: Route payload to Core Banking
+    end
+
+    Note right of API: Asynchronous Processing
+    
+    loop For each status change
+        Bank->>Bank: Clear transactions
+        Bank->>API: Trigger Webhook Event
+        
+        Note right of API: Webhook Push
+        API->>PE: POST Webhook Update
+        
+        PE-->>API: Acknowledge receipt
+        
+        PE->>PE: Parse webhook payload
+        
+        alt Status is ACSC
+            PE->>ERP: Update invoice to Paid
+        else Status is RJCT
+            PE->>ERP: Update invoice to Payment Failed
+            PE->>AP: Alert Transaction rejected
+        end
+    end
+
+
+
