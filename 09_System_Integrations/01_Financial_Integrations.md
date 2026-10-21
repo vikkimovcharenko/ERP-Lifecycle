@@ -28,8 +28,6 @@
 [UML Sequence Diagram: AP Payments](./09_System_integrations/UML_Diagram_Payments.png)
 
 
----
 
-### 1.4 API Sequence Diagram
 
 
