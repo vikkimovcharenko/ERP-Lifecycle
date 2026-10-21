@@ -25,7 +25,7 @@
 
 ### 1.4. UML Sequence Diagram
 
-[UML Sequence Diagram: AP Payments](./09_System_integrations/UML_Diagram_Payments.png)
+[UML Sequence Diagram: Payments](./09_System_integrations/UML_Diagram_Payments.png)
 
 
 
