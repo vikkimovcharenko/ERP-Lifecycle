@@ -23,6 +23,11 @@
 3.  **Paid:** Webhook received confirming settlement. Idempotency verified. AP sub-ledger cleared.
 4.  **Payment Failed:** Webhook received indicating failure (e.g., NSF, invalid account). Alert routed to AP Manager.
 
+### 1.4. UML Sequence Diagram
+
+[UML Sequence Diagram: AP Payments](./09_System_integrations/UML_Diagram_Payments.png)
+
+
 ---
 
 ### 1.4 API Sequence Diagram
