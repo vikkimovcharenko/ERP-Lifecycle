@@ -1,4 +1,4 @@
-# 01. Goods Receipt, Quality Control (QC) & Returns
+# 401. Goods Receipt, Quality Control (QC) & Returns
 
 ## 1. Business Context
 The receiving process ensures that only high-quality, strictly verified materials enter the production inventory. It employs a strict Separation of Duties (SoD) between the Quality Control (QC) Manager and the Stock Keeper. The QC Manager evaluates delivery timing and material quality, routing defects to a Quarantine zone and triggering Vendor Rating penalties. The Stock Keeper is restricted to viewing and receiving only the approved "Good" quantity via barcode scanning. Defective items are processed for Return to Vendor (RTV) with an associated Credit Memo.
