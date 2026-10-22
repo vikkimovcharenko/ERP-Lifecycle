@@ -1,4 +1,4 @@
-# 03. Bill of Materials (BOM) & Routing
+# 203. Bill of Materials (BOM) & Routing
 
 ## 1. Business Context
 To transition from procurement to manufacturing, the system must understand how individual procured components (SKUs) are assembled into finished goods. The Bill of Materials (BOM) acts as the central recipe, linking the Master Item records to specific production routing steps.
