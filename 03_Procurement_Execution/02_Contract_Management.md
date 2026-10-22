@@ -1,4 +1,4 @@
-# 03. Contract Management (Framework Agreements)
+# 303. Contract Management (Framework Agreements)
 
 ## 1. Business Context
 To streamline purchasing and control enterprise spend, the system utilizes Umbrella Contracts that govern both Catalog and Non-Catalog purchases under a single Total Contract Amount. For Catalog items, prices are strictly fixed. For Non-Catalog purchases, the contract utilizes a **Price Variance** parameter to cap cost fluctuations. All Purchase Requisitions (PRs) and Purchase Orders (POs) linked to the umbrella agreement dynamically consume the predefined total limit.
