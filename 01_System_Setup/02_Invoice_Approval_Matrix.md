@@ -1,4 +1,4 @@
-# 02. AP Invoice Approval Matrix
+# 102. AP Invoice Approval Matrix
 
 ## 1. Business Context
 The Accounts Payable (AP) Approval Matrix defines the delegation of authority for authorizing vendor payments. It is triggered after a successful 3-Way Match (PO = Goods Receipt = Invoice) or after a tolerated Purchase Price Variance (PPV) is registered. The matrix ensures financial control, separating invoice registration from final payment execution.
