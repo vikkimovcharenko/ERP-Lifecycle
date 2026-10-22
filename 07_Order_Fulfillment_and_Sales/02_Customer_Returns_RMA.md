@@ -1,4 +1,4 @@
-# 02. Customer Returns (RMA) & Traceability Resolution
+# 702. Customer Returns (RMA) & Traceability Resolution
 
 ## 1. Business Context
 When a customer returns Finished Goods (FG), the Return Merchandise Authorization (RMA) process manages the inbound logistics, financial resolution, and root-cause analysis. Leveraging End-to-End Lot/Batch Traceability, the system categorizes the defect origin into three streams: **Vendor Failure** (raw materials), **Internal QA/Production Failure**, or **Customer Misuse**. This categorization dictates whether the customer receives a refund (Credit Memo) and whether internal or external corrective actions are triggered.
