@@ -1,4 +1,4 @@
-# 07. Finished Goods, Order Fulfillment & Sales
+# 701. Finished Goods, Order Fulfillment & Sales
 
 ## 1. Business Context
 The Order Fulfillment module manages the lifecycle of Finished Goods (FG) across three distinct operational streams: **Make-to-Stock** (standard inventory awaiting sale), **Make-to-Order** (pre-orders awaiting production completion), and **R&D / Experimental** (quarantined batches awaiting secondary QA testing). 
