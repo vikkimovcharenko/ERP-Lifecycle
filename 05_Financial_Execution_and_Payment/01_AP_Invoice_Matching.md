@@ -1,4 +1,4 @@
-# 05. AP Invoice Matching & Payment Execution
+# 505. AP Invoice Matching & Payment Execution
 
 ## 1. Business Context
 The Accounts Payable (AP) process ensures strict financial compliance through a rigorous 3-Way Match logic (Purchase Order = Goods Receipt = Invoice). It enforces a clear Separation of Duties (SoD) between Warehouse logistics, AP Accounting, and Treasury (Payment Managers). The system automatically handles acceptable price tolerances via Purchase Price Variance (PPV) accounts, routes discrepancies for procurement resolution, and executes secure payments via Bank API integrations.
