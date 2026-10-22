@@ -1,4 +1,4 @@
-# 02. Vendor Onboarding & Master Data Management
+# 202. Vendor Onboarding & Master Data Management
 
 ## 1. Business Context
 The Vendor Onboarding process is triggered after the Sourcing/RFQ phase is successfully concluded. To ensure compliance and data integrity, the system utilizes an automated validation gateway for financial data (Tax ID, Bank formats) before routing the request and mandatory legal attachments for manual human approval (Compliance/Legal).
