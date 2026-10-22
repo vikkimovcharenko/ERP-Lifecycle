@@ -1,4 +1,4 @@
-# 06. Manufacturing Execution & Quality Assurance
+# 601. Manufacturing Execution & Quality Assurance
 
 ## 1. Business Context
 The Manufacturing module is driven by a **Production Plan (Master Production Schedule - MPS)**. To prevent production downtime, the system utilizes Material Requirements Planning (MRP) logic: it continuously monitors inventory levels against the Production Plan. When component stock approaches critical minimums, the system automatically triggers alerts and generates Purchase Requisitions (PRs) for catalog items.
