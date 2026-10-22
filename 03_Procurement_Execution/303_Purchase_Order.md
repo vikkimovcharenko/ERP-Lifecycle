@@ -1,76 +1,39 @@
-# 303. Purchase Order (PO) Execution
+# 303. Purchase Order (PO) Execution & Risk Mitigation
 
 ## 1. Business Context
-The Purchase Order (PO) generation process employs a dual-path logic based on the nature of the approved Purchase Requisition (PR). For Catalog items with fixed pricing linked to an active Umbrella Contract, the system automatically generates and dispatches the PO (Touchless Procurement). For Non-Catalog items, a Procurement Manager must manually create the PO to confirm current vendor pricing. Non-Catalog POs are subject to an automated Price Variance check against the contract to determine if secondary financial approval is required.
+The Purchase Order (PO) generation process integrates closely with the Master Data Management (MDM) Vendor Risk Labelling system (Categories A, B, and C). The system attempts to achieve "Touchless Procurement" for standard catalogue items, but strictly enforces manual intervention, Split Sourcing, and hierarchical approvals the moment a vendor's performance rating deteriorates.
 
-## 2. Business Process Flow: PO Creation & Dispatch
+## 2. Business Process Flow: PO Creation & Vendor Risk Gateways
 
-**Primary Actors:** System, Procurement Manager, Finance Controller.
+**Primary Actors:** System, Procurement Manager, Production Manager, Legal/Compliance.
 
 ### Process Steps:
 
-   **Pre-Condition:** Vendor Risk Check:
-Before any PO is generated (automatically or manually), the system verifies the Vendor's active Performance Rating. If the rating is below the acceptable threshold (due to previous QC defects or delivery delays), the system automatically blocks the PO creation, flags the vendor as [On Hold], and routes an alert to the Procurement Manager to source an alternate supplier.
+**Pre-Condition (Vendor Risk Gateway):**
+Before any PR converts to a PO, the system evaluates the vendor's active risk label:
 
-1. **Initiation:** The workflow is triggered when a PR receives final approval.
-2. **Routing Gateway (Catalog vs. Non-Catalog):**
-    *   **Catalog PR:** The system automatically generates the PO using fixed contract prices, auto-approves it, and proceeds to dispatch.
-    *   **Non-Catalog PR:** The PR is routed to the Procurement Manager's queue. The Manager confirms current market pricing with the vendor, creates the PO manually, and links it to the Umbrella Contract.
-3. **Variance Check & Approval (Non-Catalog Only):**
-    *   The system compares the newly entered PO price against the Umbrella Contract's Price Variance tolerance (e.g., maximum 5% deviation) and checks the Total Remaining Contract Value.
-    *   *Within Limits:* The PO is automatically approved.
-    *   *Exceeds Limits:* The PO is routed to the Finance Controller for secondary approval.
-4. **Dispatch:** Once the PO is approved (automatically or manually), the system generates a standard PDF and automatically dispatches it to the Vendor's registered email address (or via EDI).
-5. **Closure:** PO status updates to **[Issued to Vendor]**.
+*   **Category A (Green):** Proceed to standard PO generation.
+*   **Category B (Yellow):** Auto-catalogue PR generation is halted. The system alerts the Production Manager, who must decide whether to proceed with the Yellow vendor (requires Production Director & CFO approval) or utilise a Secondary Vendor. A separate alert is routed to Procurement to begin sourcing alternatives.
+*   **Category C (Red):** The system completely blocks the creation of all new PRs and POs.
+
+### 2.1 In-Flight Reversals & Cancellation (Red Vendor Trigger)
+If a vendor's rating drops to Category C (Red) while procurement documents are already in progress, the system executes an automated containment protocol:
+1.  **Open PRs & Unsent POs:** The system automatically cancels these documents, revokes the Red vendor's ID, and reverts the demand to a **[Sourcing Required]** status. An alert is sent to the Procurement Manager to action the orphaned demand.
+2.  **Dispatched POs (State 3):** Since sent POs represent legal offers, they are automatically transitioned to a **[Legal Hold]** status. This temporarily removes the expected volume from the MRP engine's calculations and alerts the Legal/Procurement team to initiate formal contract cancellation procedures offline.
+
+### 2.2 Standard Workflow (Post-Risk Check)
+1.  **Routing Gateway (Catalogue vs. Non-Catalogue):**
+    *   *Catalogue PR:* The system auto-generates the PO using fixed contract prices.
+    *   *Non-Catalogue PR:* The Procurement Manager enters current ad-hoc pricing and links it to an Umbrella Contract.
+2.  **Variance Check (Non-Catalogue Only):** The system checks the new price against the contract's Price Variance tolerance. Exceptions route to the Finance Controller.
+3.  **Dispatch:** The system generates a PDF and dispatches it via Email/EDI. Status updates to **[Issued to Vendor]**.
 
 ---
 
-## 3. Workflow Diagram
+## 3. Key User Stories
 
-```mermaid
-flowchart TD
-    Start((Approved PR)) --> Type{PR Type?}
-    
-    %% Catalog Workflow (Touchless)
-    Type -- Catalog --> AutoPO[System Auto-Generates PO]
-    AutoPO --> AutoApprove[System Auto-Approves PO]
-    
-    %% Non-Catalog Workflow (Manual Intervention)
-    Type -- Non-Catalog --> Queue[Route to Procurement Queue]
-    Queue --> ManualPO[Proc Manager Enters<br>Current Vendor Price]
-    ManualPO --> Link[Link PO to Umbrella Contract]
-    
-    Link --> VarianceCheck{Check Price Variance<br>& Contract Limits}
-    
-    VarianceCheck -- Within Tolerance --> AutoApprove
-    VarianceCheck -- Exceeds Tolerance --> FinApprove[Route to Finance Controller]
-    
-    FinApprove --> FinCheck{Approved?}
-    FinCheck -- No --> Reject[Return to Proc Manager<br>for Renegotiation] -.-> ManualPO
-    FinCheck -- Yes --> Dispatch
-    
-    %% Common Dispatch Step
-    AutoApprove --> Dispatch[System Generates PDF<br>& Dispatches via Email/EDI]
-    Dispatch --> End(((PO Status:<br>Issued to Vendor)))
-
-    classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px;
-    classDef decision fill:#e1f5fe,stroke:#03a9f4,stroke-width:2px;
-    classDef sysAction fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px;
-    
-    class Type,VarianceCheck,FinCheck decision;
-    class AutoPO,AutoApprove,Dispatch sysAction;
-
-```
-
-## 4. Key User Stories
-
- **US-PO-01:** As the System, I want to automatically generate, approve, and dispatch POs for Catalog PRs linked to an active contract, so that routine purchasing requires zero manual intervention.
- 
- **US-PO-02:** As a Procurement Manager, I want to manually enter current pricing for Non-Catalog POs, so that I can accurately reflect negotiated ad-hoc costs before linking them to the Umbrella Contract.
- 
- **US-PO-03:** As the System, I want to automatically check Non-Catalog POs against the contract's Price Variance limit, routing exceptions to Finance while auto-approving those within tolerance.
- 
- **US-PO-04:** As a Vendor, I want to receive an automated email with the approved PO attached as a PDF, so that I can immediately begin order fulfillment.
- 
- **US-PO-05:** As the System, I want to block the generation of a PO if the selected Vendor's performance rating is below the critical threshold, so that we structurally prevent supply chain risks caused by chronic underperformers.
+*   **US-PO-01:** As the System, I want to auto-generate and dispatch POs for Catalogue PRs linked to Category A (Green) vendors, enabling touchless procurement.
+*   **US-PO-02:** As the System, I want to halt automatic PR creation for Category B (Yellow) vendors and notify the Production Manager, forcing a conscious decision to accept risk or route to a secondary supplier.
+*   **US-PO-03:** As the System, I want to instantly revert any open PRs and unsent POs to [Sourcing Required] if the linked vendor drops to Category C (Red), preventing risky commitments.
+*   **US-PO-04:** As the System, I want to transition dispatched POs for Red vendors into a [Legal Hold] status, ensuring the MRP engine does not rely on those goods while Legal negotiates cancellation.
 
