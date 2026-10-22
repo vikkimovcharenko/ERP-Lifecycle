@@ -1,5 +1,5 @@
 
-# 01. Purchase Requisition (PR) Management
+# 301. Purchase Requisition (PR) Management
 
 ## 1. Prerequisites (System Setup & Data)
 Before a Purchase Requisition can be successfully initiated and routed, the following system configurations and master data migrations must be completed.
