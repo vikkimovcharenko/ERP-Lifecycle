@@ -24,7 +24,7 @@ This project demonstrates a robust, enterprise-grade system design emphasizing:
 * **02. Master Data Management (MDM)**
   * [Item creation](./02_Master_Data_Management/201_Item_Creation.md)
   * [Vendor Onboarding](./02_Master_Data_Management/202_Vendor_Onboarding.md)
-  * [Bill of Materials](./02_Master_Data_Management/203_Bill_of_Materials.md/)
+  * [Bill of Materials](./02_Master_Data_Management/203_Bill_of_Materials.md)
   * [Customer Onboarding & Credit Management](./02_Master_Data_Management/204_Customer_Onboarding.md)
 
 ### Phase 2: Procure-to-Pay (P2P)
