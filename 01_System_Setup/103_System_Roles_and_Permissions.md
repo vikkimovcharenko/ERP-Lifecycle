@@ -9,7 +9,7 @@ To comply with audit standards (e.g., SOX) and ensure strict Separation of Dutie
 | :--- | :--- | :--- | :--- |
 | **Master Data** | **Item Admin** | Creates and manages Item Master data, BOMs, and catalogs. | Procurement Execution, Inventory |
 | | **Compliance Officer** | Verifies vendor legal documents and activates Vendor records. | Creating POs, Making Payments |
-| **Procurement** | **Procurement Manager** | Negotiates contracts, manages Non-Catalog POs, resolves Price Holds. | Approving Invoices, Receiving Goods |
+| **Procurement** | **Procurement Manager** | Negotiates contracts, Vendor onboarding initiation, manages Non-Catalog POs, resolves Price Holds. | Approving Invoices, Receiving Goods |
 | | **CC Responsible** | Approves PRs based on departmental budget (Cost Center). | Creating POs, Invoice Approval |
 | **Logistics & QA** | **QC Manager** | Inspects deliveries, routes defects to Quarantine, creates RTVs/Credit Memos. | Approving POs, Financial Payments |
 | | **Stock Keeper** | Scans barcodes for Goods Receipt; views only "Production Available" (PA) stock. | Viewing Quarantined Stock, Invoice Entry |
