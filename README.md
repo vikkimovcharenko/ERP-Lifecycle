@@ -18,7 +18,7 @@ This project demonstrates a robust, enterprise-grade system design emphasizing:
 
 ### Phase 1: Foundation & Master Data
 * **01. System Setup**
-  * [PR Approval Matrix](./01_System_Setup/101_PR_Aprproval_Matrix.md)
+  * [PR Approval Matrix](./01_System_Setup/101_PR_Approval_Matrix.md)
   * [Invoice Approval Matrix](./01_System_Setup/102_Invoice_Approval_Matrix.md)
   * [System Roles & Permissions (SoD)](./01_System_Setup/103_System_Roles_and_Permissions.md)
 * **02. Master Data Management (MDM)**
