@@ -1,4 +1,4 @@
-# 04. Customer Onboarding & Credit Management
+# 204. Customer Onboarding & Credit Management
 
 ## 1. Business Context
 Before a Sales Order can be processed, a Customer must be formally onboarded to ensure legal compliance (KYC) and mitigate financial risk. The workflow establishes system-enforced Credit Limits based on comprehensive risk profiling, which includes evaluating historical payment delays and the frequency/reasons for past product returns (RMA). It mandates a strict Separation of Duties (SoD) between Sales, Compliance, and Finance.
