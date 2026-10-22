@@ -1,4 +1,4 @@
-# 03. Purchase Order (PO) Execution
+# 303. Purchase Order (PO) Execution
 
 ## 1. Business Context
 The Purchase Order (PO) generation process employs a dual-path logic based on the nature of the approved Purchase Requisition (PR). For Catalog items with fixed pricing linked to an active Umbrella Contract, the system automatically generates and dispatches the PO (Touchless Procurement). For Non-Catalog items, a Procurement Manager must manually create the PO to confirm current vendor pricing. Non-Catalog POs are subject to an automated Price Variance check against the contract to determine if secondary financial approval is required.
