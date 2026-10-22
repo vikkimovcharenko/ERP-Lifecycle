@@ -1,4 +1,4 @@
-# 03. System Roles & Permissions (Separation of Duties)
+# 103. System Roles & Permissions (Separation of Duties)
 
 ## 1. Business Context
 To comply with audit standards (e.g., SOX) and ensure strict Separation of Duties (SoD), system access is compartmentalized by functional roles. Users can only access the modules and perform actions necessary for their specific job functions.
