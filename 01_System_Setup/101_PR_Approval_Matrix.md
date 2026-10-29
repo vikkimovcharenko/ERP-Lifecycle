@@ -44,37 +44,7 @@ When the system identifies the selected primary vendor as Category B (Potential 
 --- 
 ## 3. Workflow Diagram 
 
-```mermaid
-flowchart TD
-    Start((PR Submitted)) --> RiskCheck{Vendor Risk<br>Category?}
-    
-    %% Risk Divergence
-    RiskCheck -- Category C (Red) --> Block[System Blocks PR Creation] --> End0(((Cancelled)))
-    
-    RiskCheck -- Category B (Yellow) --> Y_Flow[Forced Buy / Override?]
-    Y_Flow -- Yes --> PD_CFO[1. Production Director<br>2. CFO] --> End1(((Approved)))
-    Y_Flow -- No --> RouteSec[Route to Secondary Vendor<br>(Category A)]
-    
-    %% Green / Standard Routing
-    RiskCheck -- Category A (Green) --> RouteSec
-    RouteSec --> Type{PR Type?}
-    
-    Type -- Catalogue --> CatAmount1{Amount >= €1,000?}
-    CatAmount1 -- No --> Auto[Auto-Approved] --> End1
-    CatAmount1 -- Yes --> PD1[1. Production Director] --> CFO1{Amount > €50,000?}
-    CFO1 -- Yes --> CFO_App1[2. CFO] --> End1
-    CFO1 -- No --> End1
-    
-    Type -- Non-Catalogue --> PD2[1. Production Director] --> CC[2. CC Responsible (>= €1,000)]
-    CC --> PM[3. Procurement Manager (>= €10,000)] --> CFO2{Amount > €50,000?}
-    CFO2 -- Yes --> CFO_App2[4. CFO] --> End2(((Approved)))
-    CFO2 -- No --> End2
 
-    classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px;
-    classDef decision fill:#e1f5fe,stroke:#03a9f4,stroke-width:2px;
-    class RiskCheck,Type,CatAmount1,CFO1,CFO2,Y_Flow decision;
-
-```
 
 ## 4. Key User Stories
 
