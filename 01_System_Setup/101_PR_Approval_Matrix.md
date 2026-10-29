@@ -41,7 +41,7 @@ When the system identifies the selected primary vendor as Category B (Potential 
 | :--- | :--- | :--- |
 | **Catalogue PR (Forced Yellow)**| Any Amount | Step 1: Production Director <br> Step 2: CFO |
 
----
+--- 
 ## 3. Workflow Diagram 
 
 ```mermaid
