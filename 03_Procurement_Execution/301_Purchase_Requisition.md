@@ -23,14 +23,14 @@ Before a Purchase Requisition can be successfully initiated and routed, the foll
 
 **Trigger Gateway (Manual vs. Automated based on Risk Label):**
 *   **Automated (MRP/Min-Max - Category A Vendors Only):** For standard catalogue components linked to a Category A (Green) vendor, the MRP engine continuously monitors stock levels. When inventory drops below the predefined Minimum Stock threshold, the system automatically generates a PR.
-*   **Manual (Category B Vendors):** If the primary vendor is Category B (Yellow), the MRP halts automation and alerts the Production Manager to manually initiate the PR or route the demand to a Secondary Vendor.
+*   **Manual (Ad-Hoc or Category B Vendors):** The Production Manager manually initiates a PR for non-standard requirements. Additionally, if the MRP detects a shortage for a Category B (Yellow) vendor, it halts automation and alerts the PM to manually initiate the PR or route the demand to a Secondary Vendor.
 *   **Blocked (Category C Vendors):** No PRs can be generated for Category C (Red) vendors. 
 
 ### Process Steps:
 1. **Initiation:** The Requestor navigates to the *Requisitions* module and selects *Create Requisition*.
 2. **Vendor & Contract Selection:**
     *   *Known Source:* The Requestor selects an existing Vendor and Contract. (Restricted to Active, non-Red vendors).
-    *   *Unknown Source:* The Requestor leaves these fields blank.
+    *   *Unknown Source:* The Requestor leaves these fields blank. (Bypasses initial Risk Gate, triggers Sourcing later).
 3. **Item Selection:**
     *   Choose the item directly from the specific Vendor’s catalogue or general Item Master.
     *   *Exception:* Initiate **Item Creation Request** if the part is missing.
@@ -43,22 +43,33 @@ Before a Purchase Requisition can be successfully initiated and routed, the foll
 
 ```mermaid
 flowchart TD
-    Demand((Material Demand<br>Triggered)) --> RiskGate{Vendor Risk<br>Category?}
+    %% Triggers
+    MRP((MRP Demand<br>Triggered))
+    Manual((User Initiates<br>Ad-Hoc PR))
     
-    %% MRP Automation Gateway
-    RiskGate -- Category A - Green --> Auto[MRP Auto-Generates PR]
-    RiskGate -- Category C - Red --> Block[System Blocks PR] --> End1((Failed))
-    RiskGate -- Category B - Yellow --> Alert[Alert Production Manager:<br>Manual Action Required]
+    %% Manual Flow Initial Steps
+    Manual --> Known{Vendor Known?}
+    Known -- No --> GenCat[Select from General Catalogue<br>or Request New Item]
+    GenCat --> Route[Route to Standard Approval Matrix]
+    
+    Known -- Yes --> RiskGate{Vendor Risk<br>Category?}
+    MRP --> RiskGate
+    
+    %% Risk Gateway
+    RiskGate -- Category C - Red --> Block[System Blocks PR] --> End1((Cancelled))
+    RiskGate -- Category B - Yellow --> Alert[Alert Production Manager:<br>Review Risk]
     
     Alert --> UserChoice{Proceed with<br>Yellow Vendor?}
-    UserChoice -- No --> SecVendor[Select Secondary<br>Green Vendor] --> Auto
-    UserChoice -- Yes --> ManPR[Manually Create PR]
+    UserChoice -- No --> SecVendor[Select Secondary Green Vendor] --> GreenFlow
+    UserChoice -- Yes --> ManPR[Manually Create Forced PR] --> RouteRisk[Route to Risk Override Matrix<br>PD and CFO]
     
-    %% Routing
-    Auto --> Route[Route to Approval Matrix]
-    ManPR --> RouteRisk[Route to Risk Override Matrix<br>PD and CFO]
+    RiskGate -- Category A - Green --> GreenFlow[Standard Flow]
     
-    %% In-Flight Reversal
+    GreenFlow --> TriggerCheck{Trigger Type?}
+    TriggerCheck -- MRP --> Auto[System Auto-Generates PR] --> Route
+    TriggerCheck -- Manual --> ManCat[User Enters Details] --> Route
+    
+    %% Routing & In-Flight Reversal
     Route --> Approve[PR Approved]
     RouteRisk --> Approve
     
@@ -68,8 +79,9 @@ flowchart TD
 
     classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px;
     classDef decision fill:#e1f5fe,stroke:#03a9f4,stroke-width:2px;
-    class RiskGate,UserChoice,Monitor decision;
+    class RiskGate,UserChoice,Monitor,Known,TriggerCheck decision;
 ```
+
 ---
 
 ## 4. Key User Stories
@@ -78,3 +90,4 @@ flowchart TD
 *   **US-PR-02:** As the System, I want to block auto-generation of PRs for Category B (Yellow) vendors and instead notify the Production Manager to manually manage the risk.
 *   **US-PR-03:** As a Procurement Manager, I want the system to automatically flag in-flight PRs as [Sourcing Required] if the vendor turns Red, so that I can immediately assign a new supplier without losing the manufacturing demand.
 *   **US-PR-04:** As a Production Manager, I need the ability to trigger an "Item Creation Request" directly from the PR screen if a part is missing, so that I don't have to navigate to a different module.
+*   **US-PR-05:** As a Production Manager, I want to manually create an ad-hoc Purchase Requisition without selecting a vendor, so that the Procurement department can source the best supplier for my requirement.
