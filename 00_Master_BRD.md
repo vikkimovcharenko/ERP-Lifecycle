@@ -1,9 +1,9 @@
 # Master Business Requirements Document (BRD)
 **Project:** Enterprise ERP Implementation (P2P, Manufacturing, Order Fulfillment)
-**Version:** 1.1 (Includes Customer Onboarding & RMA)
+**Version:** 1.2 (Includes A/B/C Vendor Risk Management & System Integrations)
 
 ## 1. Executive Summary
-This document outlines the end-to-end architectural and functional requirements for a comprehensive ERP ecosystem. The design prioritizes strict Separation of Duties (SoD), financial compliance (SOX, IFRS 15), automated Material Requirements Planning (MRP), and rigorous End-to-End Lot/Batch Traceability from raw material procurement to final customer dispatch and returns.
+This document outlines the end-to-end architectural and functional requirements for a comprehensive ERP ecosystem. The design prioritises strict Separation of Duties (SoD), financial compliance (SOX, IFRS 15), automated Material Requirements Planning (MRP), rigorous End-to-End Lot/Batch Traceability, and an event-driven Vendor Risk Management engine to secure the supply chain, from raw material procurement to final customer dispatch and returns..
 
 ## 2. System Architecture & Core Principles
 *   **Separation of Duties (SoD):** Strict role compartmentalization preventing any single user from initiating and approving critical financial or inventory transactions (e.g., Procurement vs. AP, Warehouse vs. QA).
@@ -33,6 +33,7 @@ The system is divided into seven sequential operational modules.
     *   Make-to-Stock, Make-to-Order, and R&D pipelines. 
     *   Flexible barcode picking (non-strict FIFO) and Goods Issue-triggered AR Invoicing.
     *   **Customer Returns (RMA):** Inbound logistics for returns, AR Credit Memo generation, and Traceability queries to categorize root causes (Vendor Defect, Internal Failure, or Customer Misuse).
+
 ### Phase 4: Analytics & Intelligence
 *  **08. Reporting & Analytics:** Operational dashboards, reporting specifications, and QA/R&D outcome tracking.
 
@@ -42,7 +43,12 @@ The system is divided into seven sequential operational modules.
 *   **Customers:** Governed by hard Credit Limits and historical risk dossiers.
 *   **Lot/Batch:** The central tracking entity linking Vendor POs, Manufacturing Work Orders, Sales Orders, and RMAs.
 
-## 5. Master User Stories Backlog
+## 5. Phase 5: System Integrations (API & Webhooks)
+*  **901. Financial_integratios**
+   *   **REST API & Webhooks:** Secure API integration to Bank Gateways for releasing approved batches.
+   *   **Idempotency & State Management:** Asynchronous webhook endpoints built with idempotency keys (`Transaction_ID` + `Status`) to prevent duplicate execution from network retry loops, ensuring the AP Ledger clears cleanly.
+
+## 6. Master User Stories Backlog
 *(Note: A complete list of agile user stories is appended to the bottom of each respective module's markdown file, ensuring requirements are kept adjacent to their business logic.)*
 
 ---
