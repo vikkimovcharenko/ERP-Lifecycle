@@ -73,6 +73,7 @@ flowchart TD
     classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px;
     classDef decision fill:#e1f5fe,stroke:#03a9f4,stroke-width:2px;
     class RiskCheck,Type,CatAmount1,CFO1,CFO2,Y_Flow decision;
+
 ```
 
 ## 4. Key User Stories
