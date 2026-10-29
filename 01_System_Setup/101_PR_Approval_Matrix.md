@@ -42,8 +42,11 @@ When the system identifies the selected primary vendor as Category B (Potential 
 | **Catalogue PR (Forced Yellow)**| Any Amount | Step 1: Production Director <br> Step 2: CFO |
 
 ---
+## 3. Workflow Diagram 
 
-## 3. Key User Stories
+
+
+## 4. Key User Stories
 
 *   **US-SYS-01:** As a System Administrator, I want to configure Descriptive Flexfields (DFF) for GL accounts so that financial data can be captured flexibly according to the entity's structure.
 *   **US-AM-01:** As the System, I want to enforce sequential routing so that higher-level executives (e.g., CFO) only review Requisitions that have already been vetted and approved by lower-tier management.
