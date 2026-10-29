@@ -22,9 +22,10 @@ Before a Purchase Requisition can be successfully initiated and routed, the foll
 **Primary Actors:** Production Manager (Requestor), System (MRP)
 **Trigger:** Need for materials (Part X) for the manufacturing process.
 
-**Trigger Gateway (Manual vs. Automated):**
-*   **Automated (MRP/Min-Max):** For standard catalog components, the ERP's Material Requirements Planning (MRP) engine continuously monitors stock levels. When inventory drops below the predefined Minimum Stock threshold, the system automatically generates a Draft PR.
-*   **Manual:** The Production Manager manually initiates a PR for non-standard or ad-hoc requirements.
+**Trigger Gateway (Manual vs. Automated based on Risk Label):**
+*   **Automated (MRP/Min-Max - Category A Vendors Only):** For standard catalogue components linked to a Category A (Green) vendor, the MRP engine continuously monitors stock levels. When inventory drops below the predefined Minimum Stock threshold, the system automatically generates a PR.
+*   **Manual (Category B Vendors):** If the primary vendor is Category B (Yellow), the MRP halts automation and alerts the Production Manager to manually initiate the PR or route the demand to a Secondary Vendor.
+*   **Blocked (Category C Vendors):** No PRs can be generated for Category C (Red) vendors. 
 
 ### Process Steps:
 1. **Initiation:** The Requestor navigates to the *Requisitions* module and selects *Create Requisition*.
@@ -35,40 +36,12 @@ Before a Purchase Requisition can be successfully initiated and routed, the foll
     *   If *Scenario A* was selected, choose the item directly from the specific Vendor’s catalog.
     *   If *Scenario B* was selected, choose the item from the general Item Master catalog.
     *   *Exception Handling:* If the required item does not exist in the system at all, the Requestor pauses the PR creation and initiates a separate **Item Creation Request** workflow.
-4. **Submission:** The Requestor populates remaining details (quantity, required date), saves the requisition, and clicks *Send for Approval*.
-5. **System Routing:** The system evaluates the PR value and cost center, automatically routing it to the appropriate approvers based on the Procurement Approval Matrix.
-
+4. **Submission & Routing:** The Requestor clicks *Send for Approval*. The system evaluates the PR value and Vendor Risk category, routing it based on the Procurement Approval Matrix.
+5. **Exception Handling (Orphaned Demand):** If an active PR's linked vendor is downgraded to Category C (Red) before the PO is dispatched, the system automatically revokes the vendor, changes the PR status to **[Sourcing Required]**, and alerts the Procurement Manager to find a new supplier.
 
 ### Process Diagram
 
-```mermaid
-flowchart TD
-    Start((Start)) --> A[Open Requisitions Module]
-    A --> B[Create New Requisition]
-    
-    B --> C{Vendor & Contract<br>Known?}
-    
-    C -- Yes --> D[Select Vendor & Contract]
-    D --> E[Select Item from<br>Vendor Catalog]
-    
-    C -- No --> F[Leave Vendor blank]
-    F --> G[Select Item from<br>General Catalog]
-    
-    E --> H{Item Exists<br>in System?}
-    G --> H
-    
-    H -- No --> I[Initiate 'Item Creation'<br>Request]
-    I --> End1(((Process Paused)))
-    
-    H -- Yes --> J[Enter Details<br>Quantity, Date]
-    J --> K[Save Requisition]
-    K --> L[Send for Approval]
-    L --> M[System Routes PR<br>based on Matrix]
-    M --> End2(((End)))
-    
-    classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px;
-    classDef decision fill:#e1f5fe,stroke:#03a9f4,stroke-width:2px;
-    class C,H decision;
+
 ```
 ---
 
