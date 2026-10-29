@@ -52,44 +52,42 @@ flowchart TD
     class BatchEngine engine;
 ```
 
-
-
-
-## 3. Module Hierarchy & Process Flow
+## 4. Module Hierarchy & Process Flow
 The system is divided into seven sequential operational modules. 
 
 ### Phase 1: Foundation & Master Data
 *   **01. System Setup:** AP/Procurement Approval Matrices and System Roles definition for SoD enforcement.
 *   **02. Master Data Management (MDM):** 
     *   Item Creation routing with Min/Max limits.
-    *   Vendor Onboarding (Tax/IBAN validation & Rating initialization).
-    *   Customer Onboarding (KYC legal review & Financial Credit Limits based on historical payment/RMA data).
+    *   Vendor Onboarding (Tax/IBAN validation) and continuous Batch Engine risk assessments.
+    *   Customer Onboarding (KYC legal review and Financial Credit Limits).
 
 ### Phase 2: Procure-to-Pay (P2P)
-*   **03. Procurement Execution:** Manual and MRP-triggered Requisitions, Umbrella Contract management, and PO dispatch with automated Vendor Rating blocks.
-*   **04. Logistics & Quality Control:** Goods Receipt via barcode scanning, delivery delay calculations, and Quarantine routing for RTVs/Credit Memos.
-*   **05. AP Financial Execution:** 3-Way Match logic, discrepancy handling (Price Holds), and automated Bank API payment integrations.
+*   **03. Procurement Execution:** Manual and MRP-triggered Requisitions, Vendor Risk Gateways blocking Red vendors, Umbrella Contract management, and PO dispatch.
+*   **04. Logistics & Quality Control:** Goods Receipt via barcode scanning, delivery delay calculations, and Quarantine routing with Legal Hold Compliance Override handling.
+*   **05. AP Financial Execution:** 3-Way Match logic, discrepancy handling (Price Holds), auto-propagated legal resolutions for audits, and automated Bank API payment integrations.
 
 ### Phase 3: Build, Fulfill & Support
-*   **06. Manufacturing:** Multi-stage production routings (WIP), Lot/Batch traceability locking, QA rework loops, and threshold-based financial Scrap write-offs.
-*   **07. Order Fulfillment & Sales:** 
+*   **06. Manufacturing:** Multi-stage production routings (WIP), Lot/Batch traceability locking, QA rework loops, and threshold-based financial Scrap write-offs. MRP calculates demand excluding Legal Hold POs.
+*   **07. Order Fulfilment & Sales:** 
     *   Make-to-Stock, Make-to-Order, and R&D pipelines. 
-    *   Flexible barcode picking (non-strict FIFO) and Goods Issue-triggered AR Invoicing.
-    *   **Customer Returns (RMA):** Inbound logistics for returns, AR Credit Memo generation, and Traceability queries to categorize root causes (Vendor Defect, Internal Failure, or Customer Misuse).
+    *   Flexible barcode picking and Goods Issue-triggered AR Invoicing.
+    *   **Customer Returns (RMA):** Inbound logistics for returns, AR Credit Memo generation, and Traceability queries tracking defects back to the Historical Data Schema for vendor penalty calculation.
 
 ### Phase 4: Analytics & Intelligence
-*  **08. Reporting & Analytics:** Operational dashboards, reporting specifications, and QA/R&D outcome tracking.
+*   **08. Reporting & Analytics:** Operational dashboards, reporting specifications, and QA/R&D outcome tracking.
 
-## 4. Master Data Elements
-*   **Items/SKUs:** Categorized with dynamic thresholds for automated MRP.
-*   **Vendors:** Evaluated dynamically via Performance Ratings (delivery timing + defect rates).
+### Phase 5: System Integrations
+*   **09. System Integrations & Interfaces (Outbound AP Payments):**
+    *   **REST API & Webhooks:** Secure API integration to Bank Gateways for releasing approved batches.
+    *   **Idempotency & State Management:** Asynchronous webhook endpoints built with idempotency keys (Transaction_ID + Status) to prevent duplicate execution from network retry loops.
+
+## 5. Master Data Elements
+*   **Items/SKUs:** Categorised with dynamic thresholds for automated MRP.
+*   **Vendors:** Evaluated dynamically via the Batch Calculation Engine (A/B/C ratings).
 *   **Customers:** Governed by hard Credit Limits and historical risk dossiers.
 *   **Lot/Batch:** The central tracking entity linking Vendor POs, Manufacturing Work Orders, Sales Orders, and RMAs.
-
-## 5. Phase 5: System Integrations (API & Webhooks)
-*  **901. Financial_integratios**
-   *   **REST API & Webhooks:** Secure API integration to Bank Gateways for releasing approved batches.
-   *   **Idempotency & State Management:** Asynchronous webhook endpoints built with idempotency keys (`Transaction_ID` + `Status`) to prevent duplicate execution from network retry loops, ensuring the AP Ledger clears cleanly.
+*   **Historical Data Schema:** An event-sourced ledger tracking all delays and defects for auditability.
 
 ## 6. Master User Stories Backlog
 *(Note: A complete list of agile user stories is appended to the bottom of each respective module's markdown file, ensuring requirements are kept adjacent to their business logic.)*
@@ -100,4 +98,3 @@ The system is divided into seven sequential operational modules.
 *   **System Architect:** [TBD]
 *   **Finance Controller:** [TBD]
 
-  
