@@ -6,11 +6,54 @@
 This document outlines the end-to-end architectural and functional requirements for a comprehensive ERP ecosystem. The design prioritises strict Separation of Duties (SoD), financial compliance (SOX, IFRS 15), automated Material Requirements Planning (MRP), rigorous End-to-End Lot/Batch Traceability, and an event-driven Vendor Risk Management engine to secure the supply chain, from raw material procurement to final customer dispatch and returns..
 
 ## 2. System Architecture & Core Principles
-*   **Separation of Duties (SoD):** Strict role compartmentalization preventing any single user from initiating and approving critical financial or inventory transactions (e.g., Procurement vs. AP, Warehouse vs. QA).
-*   **Clean Invoice & 3-Way Match:** Strict matching logic ensuring physical receipts precisely match financial liabilities, with automated Purchase Price Variance (PPV) tolerances and "Close Short" handling for partial deliveries.
+*   **Separation of Duties (SoD):** Strict role compartmentalisation preventing any single user from initiating and approving critical transactions (e.g., Procurement vs. AP, Warehouse vs. QA).
+*   **Automated Risk Management (A/B/C Categories and Batch Engine):** Vendors are dynamically labelled (Green, Yellow, Red) by a nightly Batch Calculation Engine based on historical defect and delay events. The system automatically enforces manual overrides for Yellow vendors and orchestrates a complete supply chain blockade (Legal Holds and orphaned demand rerouting) for Red vendors.
+*   **Clean Invoice & 3-Way Match:** Strict matching logic ensuring physical receipts match financial liabilities, with automated Purchase Price Variance (PPV) tolerances and documented Compliance Overrides for quarantined stock.
+*   **Revenue Recognition Compliance:** Accounts Receivable (AR) invoices are generated strictly upon Goods Issue (IFRS 15).
 *   **Segregated Inventory Visibility:** Defective or quarantined items are systematically hidden from the shop floor and dispatch workers to prevent accidental consumption.
-*   **Revenue Recognition Compliance:** Accounts Receivable (AR) invoices are generated strictly upon Goods Issue, adhering to IFRS 15 standards.
-*   **Automated Risk Management:** System-enforced Vendor Ratings (blocking poor performers) and Customer Credit Limits (based on historical KYC, payment, and RMA data).
+
+## 3. High-Level Ecosystem Diagram
+
+```mermaid
+flowchart TD
+    subgraph MDM [Master Data and Risk Engine]
+        V_Onboard[Vendor Onboarding] --> BatchEngine((Nightly Batch<br>Calculation Engine))
+        BatchEngine -->|Updates| V_Risk[Vendor Risk Categories:<br>A - Green, B - Yellow, C - Red]
+    end
+
+    subgraph P2P [Procure-to-Pay]
+        PR[Purchase Requisition] --> PO[Purchase Order<br>and Dispatch]
+        PO --> GR[Goods Receipt<br>and QC]
+        GR --> AP[AP Invoice 3-Way Match]
+    end
+
+    subgraph MFG [Manufacturing]
+        MRP[MRP Engine] --> WO[Work Orders and WIP]
+        WO --> QA1[QA Testing]
+    end
+
+    subgraph SALES [Order Fulfilment]
+        QA1 --> FG[Finished Goods]
+        FG --> Dispatch[Goods Issue and AR Invoicing]
+        Dispatch --> RMA[Customer Returns]
+    end
+
+    %% Key Integrations and Data Flows
+    V_Risk -.->|Blocks / Overrides| PR
+    V_Risk -.->|Triggers Legal Hold| PO
+    MRP -.->|Generates Demand| PR
+    PO -.->|Expected Receipts| MRP
+    RMA -.->|Logs Defects| BatchEngine
+    GR -.->|Logs Delays/Defects| BatchEngine
+    AP -.->|Bank API Integration| Bank[(Core Banking)]
+
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px;
+    classDef engine fill:#e8eaf6,stroke:#3f51b5,stroke-width:2px;
+    class BatchEngine engine;
+```
+
+
+
 
 ## 3. Module Hierarchy & Process Flow
 The system is divided into seven sequential operational modules. 
