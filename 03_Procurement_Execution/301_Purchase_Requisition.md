@@ -1,4 +1,3 @@
-
 # 301. Purchase Requisition (PR) Management
 
 ## 1. Prerequisites (System Setup & Data)
@@ -10,16 +9,16 @@ Before a Purchase Requisition can be successfully initiated and routed, the foll
 *   **Procurement Manager:** Granted permissions to create and manage Vendors, Contracts, and Purchase Orders (PO).
 
 ### 1.2. Master Data & Financial Setup
-*   **Organizational Structure:** Employee list uploaded with reporting hierarchies (essential for approval routing).
-*   **Financials:** Financial info configured, including GL Accounts and Cost Centers.
-*   **Workflow:** Procurement Approval Matrix configured in the system.
+*   **Organizational Structure:** Employee list uploaded with reporting hierarchies.
+*   **Workflow:** Procurement Approval Matrix configured in the system (including Risk Overrides).
+*   **Vendor Risk Data:** Vendor A/B/C categorisations actively maintained by the MDM Batch Engine.
 *   **Catalogs:** Initial upload of Item Master Data, Vendors, and Contracts.
 *   **Cutover Data (Migration):** Upload of historical/open data, including open PRs, open POs, on-hand inventory, and Work-in-Progress (WIP) inventory.
 
 ---
 ## 2. Business Process Flow: Create Purchase Requisition
 
-**Primary Actors:** Production Manager (Requestor), System (MRP)
+**Primary Actors:** Production Manager (Requestor), System (MRP), Procurement Manager.
 **Trigger:** Need for materials (Part X) for the manufacturing process.
 
 **Trigger Gateway (Manual vs. Automated based on Risk Label):**
@@ -29,28 +28,53 @@ Before a Purchase Requisition can be successfully initiated and routed, the foll
 
 ### Process Steps:
 1. **Initiation:** The Requestor navigates to the *Requisitions* module and selects *Create Requisition*.
-2. **Vendor & Contract Selection (Conditional):**
-    *   *Scenario A (Known Source):* The Requestor selects an existing Vendor and an active Contract.
-    *   *Scenario B (Unknown Source):* If the vendor or contract does not exist, the Requestor leaves these fields blank. (Note: This will later trigger a separate Sourcing/RFQ process for the Procurement department).
+2. **Vendor & Contract Selection:**
+    *   *Known Source:* The Requestor selects an existing Vendor and Contract. (Restricted to Active, non-Red vendors).
+    *   *Unknown Source:* The Requestor leaves these fields blank.
 3. **Item Selection:**
-    *   If *Scenario A* was selected, choose the item directly from the specific Vendor’s catalog.
-    *   If *Scenario B* was selected, choose the item from the general Item Master catalog.
-    *   *Exception Handling:* If the required item does not exist in the system at all, the Requestor pauses the PR creation and initiates a separate **Item Creation Request** workflow.
-4. **Submission & Routing:** The Requestor clicks *Send for Approval*. The system evaluates the PR value and Vendor Risk category, routing it based on the Procurement Approval Matrix.
+    *   Choose the item directly from the specific Vendor’s catalogue or general Item Master.
+    *   *Exception:* Initiate **Item Creation Request** if the part is missing.
+4. **Submission & Routing:** The Requestor populates remaining details (quantity, required date), clicks *Send for Approval*. The system evaluates the PR value and Vendor Risk category, routing it based on the Procurement Approval Matrix.
 5. **Exception Handling (Orphaned Demand):** If an active PR's linked vendor is downgraded to Category C (Red) before the PO is dispatched, the system automatically revokes the vendor, changes the PR status to **[Sourcing Required]**, and alerts the Procurement Manager to find a new supplier.
-
-### Process Diagram
-
-
 
 ---
 
-## 3. Key User Stories
+## 3. Workflow Diagram
 
-*   **US-PR-01:** As a Production Manager, I want to create a purchase requisition for an item without specifying a vendor, so that the Procurement team can source and negotiate the best contract.
-*   **US-PR-02:** As a Production Manager, I want to easily select an item from an existing vendor's active contract, so that the procurement process is expedited.
-*   **US-PR-03:** As a Production Manager, I need the ability to trigger an "Item Creation Request" directly from the PR screen if a part is missing, so that I don't have to navigate to a different module to request master data updates.
-*   **US-PR-04:** As the System, I want to automatically generate a Purchase Requisition when an active item's stock falls below the minimum threshold, so that manufacturing never halts due to predictable material shortages.
+```mermaid
+flowchart TD
+    Demand((Material Demand<br>Triggered)) --> RiskGate{Vendor Risk<br>Category?}
+    
+    %% MRP Automation Gateway
+    RiskGate -- Category A - Green --> Auto[MRP Auto-Generates PR]
+    RiskGate -- Category C - Red --> Block[System Blocks PR] --> End1((Failed))
+    RiskGate -- Category B - Yellow --> Alert[Alert Production Manager:<br>Manual Action Required]
+    
+    Alert --> UserChoice{Proceed with<br>Yellow Vendor?}
+    UserChoice -- No --> SecVendor[Select Secondary<br>Green Vendor] --> Auto
+    UserChoice -- Yes --> ManPR[Manually Create PR]
+    
+    %% Routing
+    Auto --> Route[Route to Approval Matrix]
+    ManPR --> RouteRisk[Route to Risk Override Matrix<br>PD and CFO]
+    
+    %% In-Flight Reversal
+    Route --> Approve[PR Approved]
+    RouteRisk --> Approve
+    
+    Approve --> Monitor{Vendor Status<br>Drops to Red?}
+    Monitor -- Yes --> Revert[Revoke Vendor ID<br>Change to Sourcing Required] --> AlertProc[Alert Procurement]
+    Monitor -- No --> Proceed[Proceed to PO Generation]
 
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px;
+    classDef decision fill:#e1f5fe,stroke:#03a9f4,stroke-width:2px;
+    class RiskGate,UserChoice,Monitor decision;
+```
+---
 
+## 4. Key User Stories
 
+*   **US-PR-01:** As the System, I want to automatically generate a Purchase Requisition when an active item's stock falls below the minimum threshold, provided the primary vendor is Category A (Green).
+*   **US-PR-02:** As the System, I want to block auto-generation of PRs for Category B (Yellow) vendors and instead notify the Production Manager to manually manage the risk.
+*   **US-PR-03:** As a Procurement Manager, I want the system to automatically flag in-flight PRs as [Sourcing Required] if the vendor turns Red, so that I can immediately assign a new supplier without losing the manufacturing demand.
+*   **US-PR-04:** As a Production Manager, I need the ability to trigger an "Item Creation Request" directly from the PR screen if a part is missing, so that I don't have to navigate to a different module.
