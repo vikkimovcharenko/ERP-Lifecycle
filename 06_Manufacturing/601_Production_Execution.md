@@ -1,9 +1,9 @@
 # 601. Manufacturing Execution & Quality Assurance
 
 ## 1. Business Context
-The Manufacturing module is driven by a **Production Plan (Master Production Schedule - MPS)**. To prevent production downtime, the system utilizes Material Requirements Planning (MRP) logic: it continuously monitors inventory levels against the Production Plan. When component stock approaches critical minimums, the system automatically triggers alerts and generates Purchase Requisitions (PRs) for catalog items.
+The Manufacturing module is driven by a **Production Plan (Master Production Schedule - MPS)**. To prevent production downtime, the system utilises Material Requirements Planning (MRP) logic: it continuously monitors inventory levels against the Production Plan. 
 
-Once materials are secured, production transforms raw materials into Finished Goods (FG) utilizing multi-stage routings, ensuring End-to-End Lot Traceability. QA Engineers or Production Managers can initiate Scrap documents for defects, subject to financial approval, while fixable defects trigger Rework Orders.
+Crucially, the MRP engine maintains a strict, real-time view of the supply chain. When calculating "Production Available" (PA) stock and expected inbound receipts, the MRP engine explicitly **excludes any Purchase Orders in a [Legal Hold] or [Pending Cancellation] status** (e.g., due to a Category C Vendor downgrade). This ensures the system immediately recognizes supply chain gaps and recommends new PRs for safe vendors.
 
 ## 2. Business Process Flow
 
@@ -12,7 +12,8 @@ Once materials are secured, production transforms raw materials into Finished Go
 ### Process Steps:
 1. **Production Planning & Automated MRP (System/Production Manager):**
     *   The Production Manager defines the long-term **Production Plan**.
-    *   *Automated MRP Check:* The system calculates required BOM components. If the projected "Production Available" (PA) stock falls below the critical threshold:
+    *   *Automated MRP Check:* The system calculates required BOM components. It calculates: `(Current PA Stock) + (Expected Active PO Receipts) - (Production Plan Demand)`. POs on `[Legal Hold]` are excluded.
+    *   If projected stock falls below the critical threshold, the system triggers alerts and auto-generates PRs (for Category A vendors) or sends manual initiation alerts (for Category B vendors).
         *   **Alerts:** System dispatches urgent notifications to the Production Manager and Procurement Manager.
         *   **Auto-PR:** For catalog items, the system automatically generates a PR.
 2. **Initiation & Allocation:**
